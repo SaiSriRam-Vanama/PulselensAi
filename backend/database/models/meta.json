@@ -1,0 +1,5 @@
+{
+  "scoring_method": "variance",
+  "n_training_samples": 9,
+  "n_features": 17
+}

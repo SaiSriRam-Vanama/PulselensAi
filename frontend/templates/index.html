@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseLens Prime — Startup Risk Intelligence</title>
+    <meta name="description" content="AI-powered startup failure detection using website, hiring, and social intelligence with hybrid PCA scoring.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     TOP NAVIGATION BAR
+═══════════════════════════════════════════════════════ -->
+<nav class="main-navbar" id="mainNavbar">
+    <div class="navbar-inner">
+
+        <!-- SVG Logo + Brand -->
+        <a class="navbar-brand-logo" href="#" onclick="switchTab('dashboard');return false;">
+            <div class="brand-icon-wrap">
+                <img src="{{ url_for('static', filename='img/pulselens-logo-premium.svg') }}" alt="PulseLens Prime logo" width="26" height="26">
+            </div>
+            <span class="brand-text">PulseLens <span class="brand-accent">Prime</span></span>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <div class="nav-links" id="navLinks">
+            <a class="nav-link-item active" id="nav-dashboard" href="#" onclick="switchTab('dashboard');return false;">
+                <i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span>
+            </a>
+            <a class="nav-link-item" id="nav-recent" href="#" onclick="switchTab('recent');return false;">
+                <i class="bi bi-clock-history"></i><span>Recent Analyses</span>
+                <span class="nav-badge" id="recentCountBadge">0</span>
+            </a>
+            <a class="nav-link-item" id="nav-compare" href="#" onclick="switchTab('compare');return false;">
+                <i class="bi bi-arrow-left-right"></i><span>Compare</span>
+            </a>
+            <a class="nav-link-item" id="nav-model" href="#" onclick="switchTab('model');return false;">
+                <i class="bi bi-cpu-fill"></i><span>Model Status</span>
+            </a>
+        </div>
+
+        <!-- Right: system status + hamburger -->
+        <div class="navbar-right">
+            <div class="system-status" id="systemStatus">
+                <span class="status-dot online"></span>
+                <span class="status-text">Online</span>
+            </div>
+            <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-menu-drawer" id="mobileMenuDrawer">
+    <div class="mobile-menu-header">
+        <span class="brand-text">PulseLens <span class="brand-accent">Prime</span></span>
+        <button onclick="toggleMobileMenu()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <a class="mobile-nav-item active" id="mnav-dashboard" onclick="switchTab('dashboard');toggleMobileMenu();">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+    </a>
+    <a class="mobile-nav-item" id="mnav-recent" onclick="switchTab('recent');toggleMobileMenu();">
+        <i class="bi bi-clock-history"></i> Recent Analyses
+    </a>
+    <a class="mobile-nav-item" id="mnav-compare" onclick="switchTab('compare');toggleMobileMenu();">
+        <i class="bi bi-arrow-left-right"></i> Compare Startups
+    </a>
+    <a class="mobile-nav-item" id="mnav-model" onclick="switchTab('model');toggleMobileMenu();">
+        <i class="bi bi-cpu-fill"></i> Model Status
+    </a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE WRAPPER
+═══════════════════════════════════════════════════════ -->
+<div class="page-wrapper">
+
+<!-- ══ TAB: DASHBOARD ═══════════════════════════════════ -->
+<div class="tab-content active" id="tab-dashboard">
+<div class="container-fluid main-container">
+<div class="row g-4">
+
+    <!-- ── Left Panel ──────────────────────────────────── -->
+    <div class="col-xl-3 col-lg-4">
+
+        <!-- Analysis Form -->
+        <div class="glass-card mb-4">
+            <div class="glass-card-header">
+                <div class="card-header-icon indigo"><i class="bi bi-search"></i></div>
+                <h5 class="mb-0 text-gradient">Analyze Startup</h5>
+            </div>
+            <div class="glass-card-body">
+                <form id="analysisForm">
+                    <div class="mb-3">
+                        <label for="startupName" class="form-label">Startup Name *</label>
+                        <input type="text" class="form-control" id="startupName"
+                            placeholder="e.g., Airbnb, Stripe, Notion" required autocomplete="off">
+                        <div class="form-text">Enter the startup's official name</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="websiteUrl" class="form-label">Website URL <span class="text-muted">(Optional)</span></label>
+                        <input type="url" class="form-control" id="websiteUrl" placeholder="https://example.com">
+                        <div class="form-text">Leave empty to auto-discover</div>
+                    </div>
+                    <div class="mb-3 trust-toggle-wrap">
+                        <label class="trust-toggle" for="useCachedMode">
+                            <input type="checkbox" id="useCachedMode" checked>
+                            <span>Use cached snapshot for stable repeated score</span>
+                        </label>
+                        <div class="form-text">Turn off to run fresh live scraping and update all intelligence signals.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-analyze" id="analyzeBtn">
+                        <i class="bi bi-lightning-fill me-2"></i>
+                        <span class="btn-text">Analyze Now</span>
+                        <span class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                    </button>
+                </form>
+
+                <!-- Pipeline Progress -->
+                <div id="progressSteps" class="mt-4 d-none">
+                    <div class="pipeline-label">ANALYSIS PIPELINE</div>
+                    <div class="progress-step" id="step1"><div class="step-status-icon"></div><span class="step-text">Discovering website...</span></div>
+                    <div class="progress-step" id="step2"><div class="step-status-icon"></div><span class="step-text">Validating website...</span></div>
+                    <div class="progress-step" id="step3"><div class="step-status-icon"></div><span class="step-text">Scraping website data...</span></div>
+                    <div class="progress-step" id="step4"><div class="step-status-icon"></div><span class="step-text">Mining web features...</span></div>
+                    <div class="progress-step" id="step5"><div class="step-status-icon"></div><span class="step-text">Analyzing hiring signals...</span></div>
+                    <div class="progress-step" id="step6"><div class="step-status-icon"></div><span class="step-text">Scanning social media...</span></div>
+                    <div class="progress-step" id="step7"><div class="step-status-icon"></div><span class="step-text">Computing health scores...</span></div>
+                    <div class="progress-step" id="step8"><div class="step-status-icon"></div><span class="step-text">Running Hybrid AI Engine...</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Stats -->
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <div class="card-header-icon emerald"><i class="bi bi-bar-chart-fill"></i></div>
+                <h6 class="mb-0 text-gradient">System Statistics</h6>
+            </div>
+            <div class="glass-card-body" id="statisticsPanel">
+                <div class="d-flex align-items-center text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div>
+                    <small>Loading...</small>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /left -->
+
+    <!-- ── Right Panel ─────────────────────────────────── -->
+    <div class="col-xl-9 col-lg-8">
+
+        <!-- Welcome Screen -->
+        <div id="welcomeMessage" class="welcome-screen">
+            <div class="welcome-hero">
+                <div class="hero-icon-wrap">
+                    <div class="hero-pulse-ring"></div>
+                    <div class="hero-pulse-ring delay-1"></div>
+                    <img src="{{ url_for('static', filename='img/pulselens-logo-premium.svg') }}" alt="PulseLens Prime logo" width="54" height="54" style="position:relative;z-index:1;">
+                </div>
+                <h1 class="hero-title">PulseLens Prime<br><span class="text-gradient">Trust-First Startup Analysis</span></h1>
+                <p class="hero-subtitle">Evidence-based 4-phase pipeline with transparent source labels, stable cache mode, and live refresh on demand.</p>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="d-none">
+
+            <!-- Result Header -->
+            <div class="glass-card mb-3">
+                <div class="glass-card-body result-header-body">
+                    <div class="result-info">
+                        <h2 class="result-name" id="resultStartupName"></h2>
+                        <a href="#" id="resultWebsiteUrl" target="_blank" class="result-url">
+                            <i class="bi bi-link-45deg"></i><span id="resultWebsiteUrlText"></span>
+                        </a>
+                        <div class="result-badges mt-2">
+                            <span class="status-badge" id="resultWebsiteStatus"><i class="bi bi-check-circle-fill"></i> Reachable</span>
+                            <span class="source-badge source-live" id="resultDataModeBadge">Live Analysis</span>
+                            <span class="time-badge" id="resultTimestamp"></span>
+                        </div>
+                    </div>
+                    <!-- Primary Score -->
+                    <div class="result-score-col">
+                        <div class="health-score-display">
+                            <div class="score-circle" id="scoreCircle">
+                                <div class="score-value" id="scoreValue">--</div>
+                            </div>
+                            <div class="score-label">AI Health Score</div>
+                            <div class="mt-2">
+                                <span class="scoring-method-badge badge-method-pca" id="scoringMethodBadge"
+                                    title="How health score weights were derived">🤖 Auto-Computed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ Inner Result Tabs ══════════════════════════════ -->
+            <div class="result-tabs-bar">
+                <button class="result-tab-btn active" id="rtab-btn-overview"  onclick="switchResultTab('overview')">
+                    <i class="bi bi-speedometer2"></i> Overview
+                </button>
+                <button class="result-tab-btn" id="rtab-btn-website" onclick="switchResultTab('website')">
+                    <i class="bi bi-globe2"></i> Website
+                </button>
+                <button class="result-tab-btn" id="rtab-btn-hiring" onclick="switchResultTab('hiring')">
+                    <i class="bi bi-person-workspace"></i> Hiring
+                </button>
+                <button class="result-tab-btn" id="rtab-btn-social" onclick="switchResultTab('social')">
+                    <i class="bi bi-share-fill"></i> Social
+                </button>
+                <button class="result-tab-btn" id="rtab-btn-hybrid" onclick="switchResultTab('hybrid')">
+                    <i class="bi bi-cpu-fill"></i> Hybrid AI
+                </button>
+            </div>
+
+            <!-- ── Result Tab: OVERVIEW ── -->
+            <div class="result-tab-content active" id="rtab-overview">
+
+                <!-- Risk Alert -->
+                <div class="glass-card mb-4">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon red"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Risk Assessment</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <div class="alert mb-3" id="riskAlert" role="alert">
+                            <h5 class="alert-heading" id="riskLevel">Risk Level</h5>
+                            <p class="mb-1" id="riskExplanation">Risk explanation</p>
+                            <p class="mb-0 small d-none" id="riskFailureProbability"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Contribution Doughnut -->
+                <div class="glass-card mb-4">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon amber"><i class="bi bi-pie-chart-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Score Contribution Breakdown</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <canvas id="contributionChart"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="score-contrib-stack">
+                                    <div class="score-contrib-row-item">
+                                        <div class="contrib-dot" style="background:#6366f1"></div>
+                                        <div class="contrib-name">Website Score</div>
+                                        <div class="contrib-val" id="websiteScoreDisplay">--</div>
+                                    </div>
+                                    <div class="score-contrib-row-item">
+                                        <div class="contrib-dot" style="background:#10b981"></div>
+                                        <div class="contrib-name">Hiring Score</div>
+                                        <div class="contrib-val" id="hiringScoreDisplay">--</div>
+                                    </div>
+                                    <div class="score-contrib-row-item">
+                                        <div class="contrib-dot" style="background:#7c3aed"></div>
+                                        <div class="contrib-name">Social Score</div>
+                                        <div class="contrib-val" id="socialScoreDisplay">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /rtab-overview -->
+
+            <!-- ── Result Tab: WEBSITE ── -->
+            <div class="result-tab-content d-none" id="rtab-website">
+
+                <!-- Signal Breakdown -->
+                <div class="glass-card mb-4">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon emerald"><i class="bi bi-activity"></i></div>
+                        <h5 class="mb-0 text-gradient">Signal Breakdown</h5>
+                    </div>
+                    <div class="glass-card-body"><canvas id="signalChart"></canvas></div>
+                </div>
+
+                <!-- Detailed Metrics -->
+                <div class="glass-card mb-4">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon cyan"><i class="bi bi-check2-all"></i></div>
+                        <h5 class="mb-0 text-gradient">Detailed Website Metrics</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <div class="metrics-grid">
+                            <div class="metric-tile">
+                                <div class="metric-label">Update Gap</div>
+                                <div class="metric-val" id="metricUpdateGap">--</div>
+                            </div>
+                            <div class="metric-tile">
+                                <div class="metric-label">Posts (30d)</div>
+                                <div class="metric-val" id="metricPosts30d">--</div>
+                            </div>
+                            <div class="metric-tile">
+                                <div class="metric-label">Posts (90d)</div>
+                                <div class="metric-val" id="metricPosts90d">--</div>
+                            </div>
+                            <div class="metric-tile">
+                                <div class="metric-label">Avg Frequency</div>
+                                <div class="metric-val" id="metricFrequency">--</div>
+                            </div>
+                            <div class="metric-tile">
+                                <div class="metric-label">Internal Pages</div>
+                                <div class="metric-val" id="metricPages">--</div>
+                            </div>
+                            <div class="metric-tile">
+                                <div class="metric-label">Consistency</div>
+                                <div class="metric-val" id="metricConsistency">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /rtab-website -->
+
+            <!-- ── Result Tab: HIRING ── -->
+            <div class="result-tab-content d-none" id="rtab-hiring">
+
+                <!-- Hiring Intelligence -->
+                <div class="glass-card mb-4" id="hiringCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon indigo"><i class="bi bi-person-fill-gear"></i></div>
+                        <h5 class="mb-0 text-gradient">Hiring Intelligence</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <div id="hiringNoData" class="empty-state d-none">
+                            <i class="bi bi-briefcase" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:0.75rem;"></i>
+                            <p>No hiring data found for this startup.</p>
+                            <p class="text-muted small">The scraper could not detect any job listings or hiring pages.</p>
+                        </div>
+                        <div id="hiringDataContent">
+                            <div class="hiring-metrics-row">
+                                <div class="hiring-tile">
+                                    <div class="hiring-val" id="hiringOpenPositions">--</div>
+                                    <div class="hiring-lbl">Open Positions</div>
+                                </div>
+                                <div class="hiring-tile">
+                                    <div class="hiring-val" id="hiringHealthScore">--</div>
+                                    <div class="hiring-lbl">Hiring Health</div>
+                                </div>
+                                <div class="hiring-tile">
+                                    <div class="hiring-val" id="hiringGrowthRate">--</div>
+                                    <div class="hiring-lbl">Growth Rate</div>
+                                </div>
+                            </div>
+                            <div class="hiring-activity-box mt-3">
+                                <p id="hiringActivity" class="mb-2">No hiring data available</p>
+                                <span class="badge-info-custom" id="hiringPagesFound">0 hiring pages found</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hiring Trend -->
+                <div class="glass-card mb-4" id="hiringTrendCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon emerald"><i class="bi bi-graph-up-arrow"></i></div>
+                        <h5 class="mb-0 text-gradient">Hiring Trend</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <canvas id="hiringTrendChart"></canvas>
+                    </div>
+                </div>
+
+            </div><!-- /rtab-hiring -->
+
+            <!-- ── Result Tab: SOCIAL ── -->
+            <div class="result-tab-content d-none" id="rtab-social">
+
+                <!-- Social Overview -->
+                <div class="glass-card mb-4" id="socialCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon purple"><i class="bi bi-people-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Social &amp; Engagement Intelligence</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <div id="socialNoData" class="empty-state d-none">
+                            <i class="bi bi-share" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:0.75rem;"></i>
+                            <p>No social media profiles detected.</p>
+                            <p class="text-muted small">Could not find public LinkedIn, Twitter, Instagram, or Facebook links.</p>
+                        </div>
+                        <div id="socialDataContent">
+                            <div class="mb-3">
+                                <div class="section-sub-label">Discovered Platforms:</div>
+                                <div id="socialPlatformBadges"><span class="text-muted small">No social profiles found</span></div>
+                                <div class="form-text mt-1">Supported fetch platforms: LinkedIn, Twitter/X, Instagram, Facebook.</div>
+                            </div>
+                            <div class="social-metrics-row">
+                                <div class="social-tile"><div class="social-val" id="socialHealthScore">--</div><div class="social-lbl">Social Score</div></div>
+                                <div class="social-tile"><div class="social-val" id="socialConsistency">--</div><div class="social-lbl">Consistency</div></div>
+                                <div class="social-tile"><div class="social-val" id="socialActivityDrop">--</div><div class="social-lbl">Activity Drop</div></div>
+                                <div class="social-tile"><div class="social-val" id="socialTotalPosts">--</div><div class="social-lbl">Posts Scraped</div></div>
+                            </div>
+                            <div class="explanation-box mt-3">
+                                <p class="mb-0 small" id="socialExplanationText">Social analysis pending...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Posting Frequency Chart -->
+                <div class="glass-card mb-4" id="postingFreqCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon cyan"><i class="bi bi-bar-chart-line-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Posting Frequency by Platform</h5>
+                    </div>
+                    <div class="glass-card-body"><canvas id="postingFreqChart"></canvas></div>
+                </div>
+
+                <!-- Engagement Trend -->
+                <div class="glass-card mb-4" id="engagementTrendCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon amber"><i class="bi bi-graph-up"></i></div>
+                        <h5 class="mb-0 text-gradient">Engagement Trend</h5>
+                    </div>
+                    <div class="glass-card-body"><canvas id="engagementTrendChart"></canvas></div>
+                </div>
+
+                <!-- Social Risk Pie -->
+                <div class="glass-card mb-4" id="socialRiskPieCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon red"><i class="bi bi-pie-chart-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Risk Weight Distribution</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <canvas id="socialRiskPieChart"></canvas>
+                        <p class="text-center text-muted mt-2 small">How each intelligence source contributes to the combined score</p>
+                    </div>
+                </div>
+
+            </div><!-- /rtab-social -->
+
+            <!-- ── Result Tab: HYBRID AI ── -->
+            <div class="result-tab-content d-none" id="rtab-hybrid">
+
+                <!-- Hybrid Score Card -->
+                <div class="glass-card mb-4" id="hybridScoreCard">
+                    <div class="glass-card-header phase4-header">
+                        <div class="card-header-icon violet"><i class="bi bi-stars"></i></div>
+                        <h5 class="mb-0 text-gradient">Hybrid Intelligence Score</h5>
+                        <span class="phase-badge ms-auto" id="hybridMethodBadge">Automated Model</span>
+                    </div>
+                    <div class="glass-card-body">
+                        <div class="hybrid-metrics-row">
+                            <!-- SVG Arc -->
+                            <div class="hybrid-col text-center">
+                                <div class="hybrid-score-ring">
+                                    <svg viewBox="0 0 120 120" width="130" height="130">
+                                        <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+                                        <circle cx="60" cy="60" r="52" fill="none" id="hybridArcCircle"
+                                            stroke="url(#hybridGrad)" stroke-width="10" stroke-dasharray="326.7"
+                                            stroke-dashoffset="326.7" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                                        <defs>
+                                            <linearGradient id="hybridGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#6366f1"/>
+                                                <stop offset="100%" stop-color="#8b5cf6"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <text x="60" y="55" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b" id="hybridScoreText">--</text>
+                                        <text x="60" y="74" text-anchor="middle" font-size="10" fill="#64748b">/ 100</text>
+                                    </svg>
+                                    <div class="small text-muted mt-1">Hybrid Score</div>
+                                </div>
+                            </div>
+
+                            <!-- Cluster + Method -->
+                            <div class="hybrid-col text-center">
+                                <div class="mb-3">
+                                    <div class="small text-muted mb-1">Cluster Classification</div>
+                                    <span class="badge fs-6 px-3 py-2" id="hybridClusterBadge" style="background:#6366f1;color:#fff;">—</span>
+                                </div>
+                                <div>
+                                    <div class="small text-muted mb-1">Scoring Method</div>
+                                    <span class="badge" id="hybridScoringMethodBadge" style="background:rgba(16,185,129,0.1);color:#10b981;">—</span>
+                                </div>
+                            </div>
+
+                            <!-- Failure Gauge -->
+                            <div class="hybrid-col text-center">
+                                <div class="small text-muted mb-2">Failure Probability</div>
+                                <div class="failure-gauge">
+                                    <svg viewBox="0 0 120 70" width="160" height="90">
+                                        <path d="M10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/>
+                                        <path d="M10 60 A 50 50 0 0 1 110 60" fill="none" id="failureArcPath"
+                                            stroke="#ef4444" stroke-width="12" stroke-linecap="round"
+                                            stroke-dasharray="157" stroke-dashoffset="157"/>
+                                        <text x="60" y="58" text-anchor="middle" font-size="18" font-weight="bold" id="failureProbText" fill="#1e293b">--%</text>
+                                    </svg>
+                                </div>
+                                <div id="failureRiskTag" class="badge mt-1" style="background:rgba(239,68,68,0.1);color:#ef4444;">—</div>
+                            </div>
+                        </div>
+
+                        <div class="explanation-box explanation-hybrid mt-3">
+                            <p class="mb-0 small" id="hybridExplanationText" style="line-height:1.7;">Hybrid analysis pending...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Importance -->
+                <div class="glass-card mb-4" id="featureImportanceCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon amber"><i class="bi bi-bar-chart-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Feature Importance</h5>
+                    </div>
+                    <div class="glass-card-body"><canvas id="featureImportanceChart" height="220"></canvas></div>
+                </div>
+
+                <!-- Signal Contribution Radar -->
+                <div class="glass-card mb-4" id="signalContributionCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon purple"><i class="bi bi-diagram-3-fill"></i></div>
+                        <h5 class="mb-0 text-gradient">Signal Contribution Radar</h5>
+                    </div>
+                    <div class="glass-card-body"><canvas id="signalContributionChart"></canvas></div>
+                </div>
+
+                <!-- Health Trend -->
+                <div class="glass-card mb-4" id="hybridTrendCard">
+                    <div class="glass-card-header">
+                        <div class="card-header-icon emerald"><i class="bi bi-graph-up-arrow"></i></div>
+                        <h5 class="mb-0 text-gradient">Health Score Trend</h5>
+                    </div>
+                    <div class="glass-card-body">
+                        <canvas id="hybridTrendChart" height="130"></canvas>
+                        <div class="text-center mt-2">
+                            <small class="text-muted" id="trendChartLabel">Run analyses multiple times to see score evolution</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /rtab-hybrid -->
+
+        </div><!-- /resultsContainer -->
+
+        <!-- Error Container -->
+        <div id="errorContainer" class="d-none">
+            <div class="alert alert-danger" role="alert">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-exclamation-circle-fill fs-4 flex-shrink-0 mt-1"></i>
+                    <div>
+                        <h5 class="alert-heading mb-2">Analysis Failed</h5>
+                        <p id="errorMessage" class="mb-0">An error occurred during analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /col-right -->
+</div><!-- /row -->
+</div><!-- /container -->
+</div><!-- /tab-dashboard -->
+
+
+<!-- ══ TAB: RECENT ANALYSES ═════════════════════════════ -->
+<div class="tab-content" id="tab-recent">
+<div class="container-fluid main-container">
+    <div class="page-header">
+        <h2 class="page-title"><i class="bi bi-clock-history me-2"></i>Recent Analyses</h2>
+        <p class="page-subtitle">View all previously analyzed startups and their health scores.</p>
+    </div>
+
+    <div class="glass-card mb-4">
+        <div class="glass-card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Search Startups</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search by startup name..." oninput="debounceSearch()">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary w-100" onclick="loadRecentAnalyses()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="glass-card-header">
+            <div class="card-header-icon indigo"><i class="bi bi-table"></i></div>
+            <h5 class="mb-0 text-gradient">Analysis History</h5>
+            <span id="recentCountLabel" class="ms-auto text-muted small"></span>
+        </div>
+        <div class="glass-card-body p-0" id="recentTableContainer">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Loading analyses...</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══ TAB: COMPARE ══════════════════════════════════════ -->
+<div class="tab-content" id="tab-compare">
+<div class="container-fluid main-container">
+    <div class="page-header">
+        <h2 class="page-title"><i class="bi bi-arrow-left-right me-2"></i>Compare Startups</h2>
+        <p class="page-subtitle">Side-by-side comparison of two startups from analysis history.</p>
+    </div>
+
+    <div class="glass-card mb-4">
+        <div class="glass-card-header">
+            <div class="card-header-icon indigo"><i class="bi bi-search"></i></div>
+            <h5 class="mb-0 text-gradient">Select Startups</h5>
+        </div>
+        <div class="glass-card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label class="form-label">Startup A</label>
+                    <input type="text" class="form-control" id="compareA" placeholder="e.g., Airbnb">
+                </div>
+                <div class="col-md-2 text-center pt-3">
+                    <span class="compare-vs-badge">VS</span>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Startup B</label>
+                    <input type="text" class="form-control" id="compareB" placeholder="e.g., Stripe">
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-primary px-4" onclick="compareStartups()">
+                    <i class="bi bi-arrow-left-right me-2"></i>Compare Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="compareResults" class="d-none">
+        <div class="row g-4">
+            <div class="col-md-6" id="compareColA"></div>
+            <div class="col-md-6" id="compareColB"></div>
+        </div>
+        <div class="glass-card mt-4">
+            <div class="glass-card-header">
+                <div class="card-header-icon amber"><i class="bi bi-bar-chart-fill"></i></div>
+                <h5 class="mb-0 text-gradient">Score Comparison</h5>
+            </div>
+            <div class="glass-card-body"><canvas id="compareChart" height="100"></canvas></div>
+        </div>
+    </div>
+    <div id="compareError" class="d-none">
+        <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i><span id="compareErrorMsg"></span></div>
+    </div>
+</div>
+</div>
+
+<!-- ══ TAB: MODEL STATUS ══════════════════════════════════ -->
+<div class="tab-content" id="tab-model">
+<div class="container-fluid main-container">
+    <div class="page-header">
+        <h2 class="page-title"><i class="bi bi-cpu-fill me-2"></i>Model Status</h2>
+        <p class="page-subtitle">Phase 4 Hybrid Scoring Engine — training info, weights, and cluster metadata.</p>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary" onclick="loadModelStatus()">
+            <i class="bi bi-arrow-clockwise me-2"></i>Refresh Status
+        </button>
+    </div>
+    <div id="modelStatusContainer">
+        <div class="text-center py-5 glass-card">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3 text-muted">Loading model status...</p>
+        </div>
+    </div>
+</div>
+</div>
+
+</div><!-- /page-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

@@ -316,6 +316,37 @@ body::after {
     cursor: pointer;
 }
 
+/* Make logo images responsive and ensure img scaling */
+.brand-logo-img, .brand-icon-wrap img, .hero-icon-wrap img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Global: ensure images never overflow their containers */
+img { max-width: 100%; height: auto; }
+
+/* Mobile / Responsive adjustments */
+@media (max-width: 992px) {
+    .nav-links { display: none !important; }
+    .hamburger-btn { display: inline-flex; }
+    .navbar-inner { padding: 0 0.75rem; }
+    .brand-text { font-size: 1.05rem; }
+    .brand-icon-wrap { width: 34px; height: 34px; }
+    .main-container { padding: 1rem; }
+    .hero-title { font-size: 1.6rem; }
+    .hero-subtitle { font-size: 0.95rem; max-width: 100%; }
+}
+
+@media (max-width: 576px) {
+    .brand-text { font-size: 1rem; }
+    .brand-accent { font-size: 1rem; }
+    .welcome-hero { padding: 1.25rem 0.5rem; }
+    .hero-icon-wrap { width: 64px; height: 64px; }
+    .hero-title { font-size: 1.4rem; }
+    .main-container { padding: 0.75rem; }
+}
+
 .mobile-nav-item {
     display: flex;
     align-items: center;

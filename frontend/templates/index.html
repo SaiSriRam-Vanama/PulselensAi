@@ -3,8 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseLens Prime — Startup Risk Intelligence</title>
-    <meta name="description" content="AI-powered startup failure detection using website, hiring, and social intelligence with hybrid PCA scoring.">
+        <title>PulseLens Prime — Startup Risk Intelligence</title>
+        <meta name="description" content="PulseLens Prime — AI-powered startup failure detection using website, hiring, and social intelligence with hybrid scoring.">
+        <link rel="icon" href="{{ url_for('static', filename='img/pulselens-logo-premium.svg') }}" />
+        <link rel="canonical" href="https://pulselensai.onrender.com/" />
+
+        <!-- Open Graph / Social -->
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="PulseLens Prime — Startup Risk Intelligence">
+        <meta property="og:description" content="AI-powered startup failure detection using website, hiring, and social intelligence with hybrid scoring.">
+        <meta property="og:url" content="https://pulselensai.onrender.com/">
+        <meta property="og:image" content="{{ url_for('static', filename='img/pulselens-logo-premium.svg', _external=True) }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="PulseLens Prime — Startup Risk Intelligence">
+        <meta name="twitter:description" content="Evidence-based startup health scoring using web, hiring and social signals.">
+        <meta name="twitter:image" content="{{ url_for('static', filename='img/pulselens-logo-premium.svg', _external=True) }}">
+
+        <!-- Structured data for rich results -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "PulseLens Prime",
+            "url": "https://pulselensai.onrender.com/",
+            "logo": "{{ url_for('static', filename='img/pulselens-logo-premium.svg', _external=True) }}"
+        }
+        </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,8 +49,8 @@
         <!-- SVG Logo + Brand -->
         <a class="navbar-brand-logo" href="#" onclick="switchTab('dashboard');return false;">
             <div class="brand-icon-wrap">
-                <img src="{{ url_for('static', filename='img/pulselens-logo-premium.svg') }}" alt="PulseLens Prime logo" width="26" height="26">
-            </div>
+                    <img class="brand-logo-img" src="{{ url_for('static', filename='img/pulselens-logo-premium.svg') }}" alt="PulseLens Prime logo" width="26" height="26">
+                </div>
             <span class="brand-text">PulseLens <span class="brand-accent">Prime</span></span>
         </a>
 

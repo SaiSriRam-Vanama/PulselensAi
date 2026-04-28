@@ -592,6 +592,24 @@ For security vulnerabilities, please email [security-email] instead of using the
 
 ## 🚀 Deployment Guide
 
+### Deploy to Render
+Render is the recommended platform for this Flask app.
+
+1. Push this repository to GitHub.
+2. Create a new **Web Service** on Render.
+3. Connect the `Cypher-IQ/PulselensAi` repository.
+4. Use these settings:
+
+```yaml
+Root Directory: backend
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+```
+
+5. Deploy the service.
+
+The included [render.yaml](render.yaml) file already defines these settings for one-click deploys.
+
 ### Deploy to Heroku
 ```bash
 # Login to Heroku

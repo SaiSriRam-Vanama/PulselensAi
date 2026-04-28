@@ -576,14 +576,14 @@ For licensing inquiries, please contact the development team.
 ## 📧 Contact & Support
 
 ### Project Team
-- **Developed by**: Cypher-IQ
+- **Developed by**: VANAMA SAI SRI RAM
 - **Repository**: [github.com/Cypher-IQ/PulselensAi](https://github.com/Cypher-IQ/PulselensAi)
 
 ### Support Channels
 - 📝 **Issues**: Report bugs via GitHub Issues
 - 💬 **Discussions**: Join GitHub Discussions
-- 📧 **Email**: [Your contact email]
-- 📱 **LinkedIn**: [Your LinkedIn profile]
+- 📧 **Email**: [saisriram2796@gmail.com]
+- 📱 **LinkedIn**: [https://www.linkedin.com/in/saisriramv/]
 
 ### Reporting Security Issues
 For security vulnerabilities, please email [security-email] instead of using the public issue tracker.

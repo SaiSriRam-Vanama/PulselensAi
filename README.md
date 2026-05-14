@@ -701,10 +701,5 @@ If you find PulselensAI useful, please star this repository and share with other
 
 ---
 
-**Last Updated**: April 28, 2024
-**Version**: 1.0.0
-**Status**: Active Development
-
----
 
 *"Detect startup distress before it becomes a crisis."*

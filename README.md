@@ -1,4 +1,4 @@
-# PulselensAI 🚀
+# PulselensAI
 
 ## Early Failure Detection System for Online Startups Using Hybrid Multi-Signal Intelligence
 
@@ -9,7 +9,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -31,7 +31,7 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **PulselensAI** is an AI-driven early failure detection system designed for online startups. It combines three independent intelligence layers:
 
@@ -55,19 +55,19 @@ Most startup assessment methods rely on:
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Capabilities
-✅ **Automated Website Discovery** - Finds startup websites via domain/search strategies  
-✅ **Real-time Web Scraping** - Extracts content recency and structural metrics  
-✅ **Hiring Pattern Analysis** - Monitors recruitment activity and team stability  
-✅ **Social Media Intelligence** - Tracks engagement decay and platform presence  
-✅ **Hybrid Risk Scoring** - Combines three signal types with dynamic weighting  
-✅ **Failure Probability Modeling** - ML-based risk prediction with K-Means clustering  
-✅ **Historical Trend Analysis** - Tracks startup health over time  
-✅ **Batch Processing** - Analyze multiple startups efficiently  
-✅ **RESTful API** - Easy integration with third-party applications  
-✅ **Interactive Dashboard** - Web-based UI for analysis and visualization  
+- **Automated Website Discovery** - Finds startup websites via domain/search strategies
+- **Real-time Web Scraping** - Extracts content recency and structural metrics
+- **Hiring Pattern Analysis** - Monitors recruitment activity and team stability
+- **Social Media Intelligence** - Tracks engagement decay and platform presence
+- **Hybrid Risk Scoring** - Combines three signal types with dynamic weighting
+- **Failure Probability Modeling** - ML-based risk prediction with K-Means clustering
+- **Historical Trend Analysis** - Tracks startup health over time
+- **Batch Processing** - Analyze multiple startups efficiently
+- **RESTful API** - Easy integration with third-party applications
+- **Interactive Dashboard** - Web-based UI for analysis and visualization
 
 ### Phase Architecture
 - **Phase 1**: Website Intelligence
@@ -77,33 +77,33 @@ Most startup assessment methods rely on:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│              Frontend (Flask Templates + JS)              │
-├─────────────────────────────────────────────────────────┤
-│                  Flask REST API Layer                    │
-├──────────┬──────────┬──────────┬──────────┬──────────────┤
-│ Phase 1  │ Phase 2  │ Phase 3  │ Database │   Phase 4    │
-│ Website  │ Hiring   │ Social   │ Manager  │ Hybrid Score │
-│ Intel    │ Intel    │ Intel    │          │ Engine (ML)  │
-├──────────┴──────────┴──────────┴──────────┴──────────────┤
-│     Backend Modules (Discovery, Scraping, Mining)       │
-├──────────────────────────────────────────────────────────┤
-│            ML Models (KMeans, Logistic Regression)       │
-└──────────────────────────────────────────────────────────┘
++-----------------------------------------------------------+
+|              Frontend (Flask Templates + JS)                |
++-----------------------------------------------------------+
+|                   Flask REST API Layer                     |
++----------+----------+----------+----------+----------------+
+| Phase 1  | Phase 2  | Phase 3  | Database |   Phase 4      |
+| Website  | Hiring   | Social   | Manager  | Hybrid Score   |
+| Intel    | Intel    | Intel    |          | Engine (ML)    |
++----------+----------+----------+----------+----------------+
+|     Backend Modules (Discovery, Scraping, Mining)         |
++-----------------------------------------------------------+
+|            ML Models (KMeans, Logistic Regression)         |
++-----------------------------------------------------------+
 ```
 
 **Data Flow:**
 ```
-Startup Input → Discovery → Scraping → Mining → Normalization 
-    → Hybrid Scoring → Risk Clustering → Probability → Output
+Startup Input -> Discovery -> Scraping -> Mining -> Normalization
+    -> Hybrid Scoring -> Risk Clustering -> Probability -> Output
 ```
 
 ---
 
-## 💻 System Requirements
+## System Requirements
 
 ### Minimum Requirements
 - **OS**: Windows 10+, macOS 10.14+, or Linux (Ubuntu 18.04+)
@@ -120,7 +120,7 @@ Startup Input → Discovery → Scraping → Mining → Normalization
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Option 1: Automated Installation (Windows)
 ```bash
@@ -137,7 +137,7 @@ This will automatically:
 
 #### Step 1: Clone Repository
 ```bash
-git clone https://github.com/Cypher-IQ/PulselensAi.git
+git clone https://github.com/SaiSriRam-Vanama/PulselensAi.git
 cd PulselensAi
 ```
 
@@ -167,7 +167,7 @@ The application will start at `http://localhost:5000`
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### For Beginners
 1. **Download the project** or clone from GitHub
@@ -190,12 +190,12 @@ curl -X POST http://localhost:5000/api/analyze \
 
 ---
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Dashboard Interface
 1. **Search Bar**: Enter startup name or URL
 2. **Analyze Button**: Initiates full 4-phase analysis
-3. **Results Panel**: 
+3. **Results Panel**:
    - Overall Health Score (0-100)
    - Risk Level Badge (Low/Medium/High/Critical)
    - Failure Probability %
@@ -229,7 +229,7 @@ curl -X POST http://localhost:5000/api/analyze \
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Full Analysis
 ```bash
@@ -318,7 +318,7 @@ Returns: Batch results with cached scores
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 PulselensAi/
@@ -365,7 +365,7 @@ PulselensAi/
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Framework**: Flask 3.0.0
@@ -388,7 +388,7 @@ PulselensAi/
 
 ---
 
-## 🤖 Machine Learning Models
+## Machine Learning Models
 
 ### Phase 4: Hybrid Scoring Engine
 
@@ -421,7 +421,7 @@ python backend/modules/hybrid_scoring.py --retrain
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Main Configuration File
 Edit `backend/config.py` for:
@@ -454,7 +454,7 @@ DATABASE_URL=sqlite:///database/startup_analysis.db
 
 ---
 
-## 💾 Database
+## Database
 
 ### Data Structure
 The system stores:
@@ -486,7 +486,7 @@ cp backups/*.db database/
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Issue: Port 5000 Already in Use
 **Solution**:
@@ -536,7 +536,7 @@ python app.py --debug
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how:
 
@@ -563,9 +563,9 @@ pytest --cov=backend/modules backend/tests/
 
 ---
 
-## 📜 License
+## License
 
-This project is part of an invention disclosure at **Marwadi University**. 
+This project is part of an invention disclosure at **Marwadi University**.
 
 **Patent Status**: Invention disclosure filed.
 
@@ -573,31 +573,31 @@ For licensing inquiries, please contact the development team.
 
 ---
 
-## 📧 Contact & Support
+## Contact & Support
 
 ### Project Team
 - **Developed by**: VANAMA SAI SRI RAM
-- **Repository**: [github.com/Cypher-IQ/PulselensAi](https://github.com/Cypher-IQ/PulselensAi)
+- **Repository**: [github.com/SaiSriRam-Vanama/PulselensAi](https://github.com/SaiSriRam-Vanama/PulselensAi)
 
 ### Support Channels
-- 📝 **Issues**: Report bugs via GitHub Issues
-- 💬 **Discussions**: Join GitHub Discussions
-- 📧 **Email**: [saisriram2796@gmail.com]
-- 📱 **LinkedIn**: [https://www.linkedin.com/in/saisriramv/]
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Join GitHub Discussions
+- **Email**: [saisriram2796@gmail.com]
+- **LinkedIn**: [https://www.linkedin.com/in/saisriramv/]
 
 ### Reporting Security Issues
 For security vulnerabilities, please email [security-email] instead of using the public issue tracker.
 
 ---
 
-## 🚀 Deployment Guide
+## Deployment Guide
 
 ### Deploy to Render
 Render is the recommended platform for this Flask app.
 
 1. Push this repository to GitHub.
 2. Create a new **Web Service** on Render.
-3. Connect the `Cypher-IQ/PulselensAi` repository.
+3. Connect the `SaiSriRam-Vanama/PulselensAi` repository.
 4. Use these settings:
 
 ```yaml
@@ -656,7 +656,7 @@ docker run -p 5000:5000 pulselens-ai
 
 ---
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 - **Average Analysis Time**: 5-15 seconds per startup
 - **Concurrent Users**: Supports 100+ simultaneous connections
@@ -666,7 +666,7 @@ docker run -p 5000:5000 pulselens-ai
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### v1.1 (Q3 2024)
 - [ ] API authentication & rate limiting
@@ -686,7 +686,7 @@ docker run -p 5000:5000 pulselens-ai
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **Patent Disclosure**: See `Patent.MD`
 - **Command Reference**: See `Running Commands.md`
@@ -695,14 +695,14 @@ docker run -p 5000:5000 pulselens-ai
 
 ---
 
-## ⭐ Star This Project
+## Star This Project
 
-If you find PulselensAI useful, please star ⭐ this repository and share with others!
+If you find PulselensAI useful, please star this repository and share with others!
 
 ---
 
-**Last Updated**: April 28, 2024  
-**Version**: 1.0.0  
+**Last Updated**: April 28, 2024
+**Version**: 1.0.0
 **Status**: Active Development
 
 ---
